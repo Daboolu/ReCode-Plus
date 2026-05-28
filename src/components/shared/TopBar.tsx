@@ -11,8 +11,11 @@ export default function TopBar() {
 
   return (
     <header className="h-16 md:h-20 bg-white/60 backdrop-blur-md border-b border-white/40 flex items-center justify-between px-6 transition-all z-30">
-      <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 tracking-tight">
-        ReCode
+      <h1 className="text-xl font-bold tracking-tight">
+        <span className="bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
+          ReCode
+        </span>
+        <span className="text-[#ffa116]"> Plus</span>
       </h1>
 
       <div className="flex items-center gap-4">

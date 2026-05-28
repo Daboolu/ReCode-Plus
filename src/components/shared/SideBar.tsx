@@ -37,8 +37,11 @@ const SideBar = () => {
             variants={textVariants}
             className="whitespace-nowrap overflow-hidden"
           >
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 tracking-tight">
-              ReCode
+            <h1 className="text-xl font-bold tracking-tight">
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
+                ReCode
+              </span>
+              <span className="text-[#ffa116]"> Plus</span>
             </h1>
           </motion.div>
         </div>
