@@ -18,17 +18,23 @@ The project currently runs from source code and stores data locally in SQLite by
 - **Future review view**: Shows the scheduled review distribution for the next 30 days.
 - **Local data ownership**: All data lives in `prisma/dev.db`, making backup and migration straightforward.
 
-## Screenshot Placeholders
+## Screenshot
 
-> Screenshot placeholder: Home dashboard with due reviews, mastery distribution, and focus tasks.
+>  Home dashboard with due reviews, mastery distribution, and focus tasks.
+![home](./public/images/home.png)
 
-> Screenshot placeholder: Questions table with search, filters, preview modal, and practice replay timeline.
+> Questions table with search, filters, preview modal, and practice replay timeline.
+![questions](./public/images/question.png)
 
-> Screenshot placeholder: Question editor with Monaco code editor, metadata sidebar, Markdown notes, and timeline.
+> Question editor with Monaco code editor, metadata sidebar, Markdown notes, and timeline.
+![editor](./public/images/display.png)
+![editor](./public/images/record.png)
 
-> Screenshot placeholder: Review page with review cards, rating buttons, and problem preview.
+> Review page with review cards, rating buttons, and problem preview.
+![review](./public/images/review.png)
 
-> Screenshot placeholder: Future page with the next 30 days review distribution chart.
+> Future page with the next 30 days review distribution chart.
+![future](./public/images/future.png)
 
 ## Tech Stack
 
