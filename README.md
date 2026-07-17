@@ -1,166 +1,166 @@
-# ReCode Plus - 本地优先的算法复习与笔记系统
+# ReCode Plus - Local-First Algorithm Practice and Review
 
-[English](./README_EN.md)
+[中文](./README_CN.md)
 
-ReCode Plus 是一个面向个人使用的算法练习管理工具。它把题目笔记、当前代码、掌握度评分、间隔复习计划和刷题回放时间线放在同一个本地应用里，适合长期维护自己的算法题库。
+ReCode Plus is a personal algorithm practice manager. It brings problem notes, current solution code, mastery ratings, spaced repetition scheduling, and practice replay timelines into one local application.
 
-项目当前以本地源码方式运行，数据默认存储在本机 SQLite 文件中。
+The project currently runs from source code and stores data locally in SQLite by default.
 
-## 功能概览
+## Features
 
-- **本地题库管理**：记录题号、标题、难度、标签、题目链接、笔记和当前代码。
-- **间隔复习计划**：根据题目难度、掌握度评分和复习次数计算下一次复习时间。
-- **每日复习队列**：自动列出今天需要复习的题目，并支持打分后更新 SRS 状态。
-- **刷题回放时间线**：记录题目创建、代码保存、复习评分等事件，方便回看一道题的练习轨迹。
-- **代码编辑与运行**：内置 Monaco Editor，支持 TypeScript、JavaScript、Python、Java、C++ 的本地执行。
-- **Markdown 笔记**：支持 Markdown、代码高亮和 LaTeX 数学公式。
-- **学习概览**：主页展示掌握度分布、待复习数量、本周新增题目和推荐复习题。
-- **未来复习视图**：展示未来 30 天的复习任务分布。
-- **本地数据可控**：所有数据保存在 `prisma/dev.db`，方便备份、迁移和自托管。
+- **Local problem library**: Track problem ID, title, difficulty, tags, link, notes, and current solution code.
+- **Spaced repetition scheduling**: Calculates the next review date from difficulty, mastery rating, interval, easiness, and review count.
+- **Daily review queue**: Lists due problems and updates review state after each rating.
+- **Practice replay timeline**: Records problem creation, code saves, and review ratings so each problem has a visible learning history.
+- **Code editor and local execution**: Built-in Monaco Editor with local execution support for TypeScript, JavaScript, Python, Java, and C++.
+- **Markdown notes**: Supports Markdown, syntax highlighting, and LaTeX math rendering.
+- **Learning dashboard**: Shows mastery distribution, due reviews, weekly additions, and suggested focus tasks.
+- **Future review view**: Shows the scheduled review distribution for the next 30 days.
+- **Local data ownership**: All data lives in `prisma/dev.db`, making backup and migration straightforward.
 
-## 截图
+## Screenshot
 
-> 主页概览，展示今日待复习、掌握度分布和推荐复习题。
+>  Home dashboard with due reviews, mastery distribution, and focus tasks.
 ![home](./public/images/home.png)
 
-> 题目列表，展示搜索、筛选、题目预览弹窗和刷题回放时间线。
+> Questions table with search, filters, preview modal, and practice replay timeline.
 ![questions](./public/images/question.png)
 
-> 题目编辑页，展示代码编辑器、元信息侧栏、Markdown 笔记和时间线。
+> Question editor with Monaco code editor, metadata sidebar, Markdown notes, and timeline.
 ![editor](./public/images/display.png)
-![editor](./public/images/record.png) 
+![editor](./public/images/record.png)
 
-> 每日复习页，展示复习卡片、评分按钮和题目预览。
+> Review page with review cards, rating buttons, and problem preview.
 ![review](./public/images/review.png)
 
-> 未来复习页，展示未来 30 天复习任务柱状图。
+> Future page with the next 30 days review distribution chart.
 ![future](./public/images/future.png)
 
-## 技术栈
+## Tech Stack
 
-- 框架：`Next.js 16`
-- UI：`React 19`, `Tailwind CSS 4`, `Framer Motion`, `Radix UI`
-- 数据库：`SQLite` + `Prisma`
-- 编辑器：`Monaco Editor`
-- 文档渲染：`React Markdown`, `KaTeX`, `rehype-highlight`
-- 状态管理：`Zustand`
+- Framework: `Next.js 16`
+- UI: `React 19`, `Tailwind CSS 4`, `Framer Motion`, `Radix UI`
+- Database: `SQLite` + `Prisma`
+- Editor: `Monaco Editor`
+- Document rendering: `React Markdown`, `KaTeX`, `rehype-highlight`
+- State management: `Zustand`
 
-## 数据模型
+## Data Model
 
-核心数据由 Prisma 管理：
+The application uses Prisma models:
 
-- `User`：本地用户与偏好设置
-- `Problem`：题目元信息
-- `Progress`：用户对题目的掌握度、复习状态和 SRS 参数
-- `Submission`：当前代码记录。一个 `Progress` 最多一条当前代码，保存时更新，不保留代码历史副本
-- `ReviewEvent`：时间线事件，例如题目创建、代码保存、复习评分
+- `User`: local user profile and preferences
+- `Problem`: platform problem metadata
+- `Progress`: per-user mastery state, review status, and SRS parameters
+- `Submission`: current solution code. Each `Progress` has at most one current code record; saving updates it instead of keeping code-history copies
+- `ReviewEvent`: timeline events such as problem creation, code saves, and review ratings
 
-默认数据库文件：
+Default database file:
 
 ```text
 prisma/dev.db
 ```
 
-## 快速开始
+## Getting Started
 
-### 环境要求
+### Requirements
 
-- `Node.js` 20 或更高版本
+- `Node.js` 20 or newer
 - `npm`
 
-### 自动启动
+### Quick Start
 
-Windows：
+Windows:
 
 ```text
-双击 start_windows.bat
+Double-click start_windows.bat
 ```
 
-Mac / Linux：
+Mac / Linux:
 
 ```bash
 chmod +x start_mac.sh
 ./start_mac.sh
 ```
 
-脚本会自动安装依赖、初始化数据库并启动开发服务。
+The script installs dependencies, initializes the database, and starts the dev server.
 
-### 手动启动
+### Manual Setup
 
-1. 安装依赖
+1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. 初始化数据库并生成 Prisma Client
+2. Initialize the database and generate Prisma Client
 
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
-3. 启动应用
+3. Start the application
 
 ```bash
 npm run dev
 ```
 
-然后访问：
+Then open:
 
 ```text
 http://localhost:3000
 ```
 
-首次进入时，如果数据库中没有用户，会自动跳转到 onboarding 页面。填写用户名、首选编程语言和界面语言后即可开始使用。
+On first launch, if no local user exists, the app redirects to onboarding. Enter a username, preferred programming language, and UI language to start using ReCode Plus.
 
-## 常用命令
+## Useful Commands
 
 ```bash
 npm run dev
 ```
 
-启动开发服务。
+Start the development server.
 
 ```bash
 npm run build
 ```
 
-构建生产版本。
+Build the production app.
 
 ```bash
 npm run lint
 ```
 
-运行 ESLint。
+Run ESLint.
 
 ```bash
 npx tsc --noEmit
 ```
 
-运行 TypeScript 类型检查。
+Run TypeScript type checking.
 
 ```bash
 npx prisma db push
 ```
 
-把 `prisma/schema.prisma` 同步到本地 SQLite 数据库。
+Sync `prisma/schema.prisma` to the local SQLite database.
 
 ```bash
 npx prisma studio
 ```
 
-打开 Prisma Studio 查看或管理本地数据。
+Open Prisma Studio to inspect or manage local data.
 
-## 数据备份与迁移
+## Backup and Migration
 
-备份时复制这个文件即可：
+To back up your data, copy:
 
 ```text
 prisma/dev.db
 ```
 
-换电脑时，把 `dev.db` 放回新环境的 `prisma/` 目录，然后运行：
+To move to another machine, place `dev.db` under the new project's `prisma/` directory, then run:
 
 ```bash
 npm install
@@ -168,17 +168,17 @@ npx prisma generate
 npm run dev
 ```
 
-## 注意事项
+## Notes
 
-- 这是本地优先应用，没有账号系统和云同步。
-- `prisma/dev.db` 是个人数据文件，建议定期备份。
-- 当前使用 `prisma db push` 维护本地数据库结构。如果多人协作或正式发布，建议改用标准 Prisma migration 流程。
-- 本地代码执行依赖系统环境，例如 `node`、`python3`、`javac`、`g++`。缺少对应运行时会导致该语言执行失败。
+- ReCode Plus is local-first and does not include cloud sync or account authentication.
+- `prisma/dev.db` contains your personal data. Back it up regularly.
+- The project currently uses `prisma db push` for local schema sync. For team collaboration or release workflows, standard Prisma migrations are recommended.
+- Local code execution depends on installed runtimes such as `node`, `python3`, `javac`, and `g++`. Missing runtimes will make the corresponding language execution fail.
 
-## 致谢
+## Acknowledgements
 
-感谢 [CoisiniIce/ReCode](https://github.com/CoisiniIce/ReCode)。本项目是在该项目基础上继续展开，并增添新的功能与调整后形成的版本。
+Thanks to [CoisiniIce/ReCode](https://github.com/CoisiniIce/ReCode). This project was developed by extending that project and adding new features and adjustments on top of it.
 
-## 开源协议
+## License
 
-本项目使用 [MIT License](./LICENSE)。
+This project is licensed under the [MIT License](./LICENSE).
