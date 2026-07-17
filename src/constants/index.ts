@@ -1,4 +1,10 @@
-import { LayoutGrid, ListTodo, BarChart2, CalendarDays } from "lucide-react";
+import {
+  LayoutGrid,
+  ListTodo,
+  BarChart2,
+  CalendarDays,
+  BrainCircuit,
+} from "lucide-react";
 
 import type { NavSection } from "@/types";
 
@@ -14,6 +20,12 @@ export const SIDEBAR_NAV: NavSection[] = [
         path: "/questions",
       },
       { en_name: "Review", zh_name: "复习", icon: BarChart2, path: "/review" },
+      {
+        en_name: "Agent Review",
+        zh_name: "Agent 复习",
+        icon: BrainCircuit,
+        path: "/agent-review",
+      },
       { en_name: "Future", zh_name: "未来计划", icon: CalendarDays, path: "/future" },
     ],
   },

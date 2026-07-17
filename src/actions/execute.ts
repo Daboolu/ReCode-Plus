@@ -1,12 +1,9 @@
 "use server";
 
 import { execFile } from "child_process";
-import { promisify } from "util";
 import fs from "fs/promises";
 import path from "path";
 import crypto from "crypto";
-
-const execFileAsync = promisify(execFile);
 
 type RunResult = {
   stdout: string;
@@ -33,16 +30,32 @@ function getErrorOutput(error: unknown) {
 async function runCommand(
   command: string,
   args: string[],
-  cwd?: string
+  cwd?: string,
+  input?: string,
 ): Promise<RunResult> {
-  return execFileAsync(command, args, {
-    cwd,
-    timeout: 5000,
-    maxBuffer: 1024 * 1024,
+  return new Promise((resolve, reject) => {
+    const child = execFile(command, args, {
+      cwd,
+      timeout: 5000,
+      maxBuffer: 1024 * 1024,
+      encoding: "utf8",
+    }, (error, stdout, stderr) => {
+      if (error) {
+        reject(Object.assign(error, { stdout, stderr }));
+        return;
+      }
+      resolve({ stdout, stderr });
+    });
+
+    child.stdin?.end(input ?? "");
   });
 }
 
-export async function executeCodeAction(language: string, code: string) {
+export async function executeCodeAction(
+  language: string,
+  code: string,
+  input = "",
+) {
   const tmpDir = path.join(process.cwd(), "tmp");
   const uuid = crypto.randomUUID();
   let cleanupPath = "";
@@ -58,21 +71,21 @@ export async function executeCodeAction(language: string, code: string) {
         const filepath = path.join(tmpDir, `${uuid}.js`);
         cleanupPath = filepath;
         await fs.writeFile(filepath, code, "utf-8");
-        result = await runCommand("node", [filepath]);
+        result = await runCommand("node", [filepath], undefined, input);
         break;
       }
       case "typescript": {
         const filepath = path.join(tmpDir, `${uuid}.ts`);
         cleanupPath = filepath;
         await fs.writeFile(filepath, code, "utf-8");
-        result = await runCommand("npx", ["tsx", filepath]);
+        result = await runCommand("npx", ["tsx", filepath], undefined, input);
         break;
       }
       case "python": {
         const filepath = path.join(tmpDir, `${uuid}.py`);
         cleanupPath = filepath;
         await fs.writeFile(filepath, code, "utf-8");
-        result = await runCommand("python3", [filepath]);
+        result = await runCommand("python3", [filepath], undefined, input);
         break;
       }
       case "java": {
@@ -85,7 +98,7 @@ export async function executeCodeAction(language: string, code: string) {
         const filepath = path.join(javaDir, "Solution.java");
         await fs.writeFile(filepath, code, "utf-8");
         await runCommand("javac", [filepath]);
-        result = await runCommand("java", ["Solution"], javaDir);
+        result = await runCommand("java", ["Solution"], javaDir, input);
         break;
       }
       case "cpp": {
@@ -94,7 +107,7 @@ export async function executeCodeAction(language: string, code: string) {
         cleanupPath = filepath;
         await fs.writeFile(filepath, code, "utf-8");
         await runCommand("g++", [filepath, "-o", binPath]);
-        result = await runCommand(binPath, []);
+        result = await runCommand(binPath, [], undefined, input);
         await fs.unlink(binPath).catch(() => {});
         break;
       }

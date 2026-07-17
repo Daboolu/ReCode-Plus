@@ -11,6 +11,7 @@ The project currently runs from source code and stores data locally in SQLite by
 - **Local problem library**: Track problem ID, title, difficulty, tags, link, notes, and current solution code.
 - **Spaced repetition scheduling**: Calculates the next review date from difficulty, mastery rating, interval, easiness, and review count.
 - **Daily review queue**: Lists due problems and updates review state after each rating.
+- **Conversational review Agent**: Uses either local Ollama or a remote OpenAI-compatible API in a dedicated review workspace with an on-demand coding editor.
 - **Practice replay timeline**: Records problem creation, code saves, and review ratings so each problem has a visible learning history.
 - **Code editor and local execution**: Built-in Monaco Editor with local execution support for TypeScript, JavaScript, Python, Java, and C++.
 - **Markdown notes**: Supports Markdown, syntax highlighting, and LaTeX math rendering.
@@ -42,6 +43,7 @@ The project currently runs from source code and stores data locally in SQLite by
 - UI: `React 19`, `Tailwind CSS 4`, `Framer Motion`, `Radix UI`
 - Database: `SQLite` + `Prisma`
 - Editor: `Monaco Editor`
+- AI: local `Ollama` + `qwen2.5-coder:7b`, or a remote OpenAI-compatible API
 - Document rendering: `React Markdown`, `KaTeX`, `rehype-highlight`
 - State management: `Zustand`
 
@@ -54,6 +56,8 @@ The application uses Prisma models:
 - `Progress`: per-user mastery state, review status, and SRS parameters
 - `Submission`: current solution code. Each `Progress` has at most one current code record; saving updates it instead of keeping code-history copies
 - `ReviewEvent`: timeline events such as problem creation, code saves, and review ratings
+- `AgentReviewSession`: resumable local Agent review state and the user-confirmed result
+- `AgentMessage`: persisted user/assistant messages and constrained UI actions for a session
 
 Default database file:
 
@@ -67,6 +71,7 @@ prisma/dev.db
 
 - `Node.js` 20 or newer
 - `npm`
+- Optional for real Agent responses: Ollama and a local model, or an OpenAI-compatible remote API
 
 ### Quick Start
 
@@ -83,7 +88,7 @@ chmod +x start_mac.sh
 ./start_mac.sh
 ```
 
-The script installs dependencies, initializes the database, and starts the dev server.
+On the first run, the script installs dependencies, generates Prisma Client, synchronizes the database, and starts the dev server. Local mode installs Ollama when needed and downloads the default 7B model (about 4.7 GB); remote mode skips every Ollama step. Later runs skip unchanged setup, and interrupted model downloads resume on the next run.
 
 ### Manual Setup
 
@@ -113,6 +118,91 @@ http://localhost:3000
 ```
 
 On first launch, if no local user exists, the app redirects to onboarding. Enter a username, preferred programming language, and UI language to start using ReCode Plus.
+
+## Conversational Review Agent
+
+The independent `/agent-review` page leaves the existing dashboard, question, and review pages unchanged. It initially shows suggestion bubbles generated from local review data. The model is called only after you choose a suggestion or send a message.
+
+During a session, the Agent can guide the discussion, request that you open the coding dialog, analyze code you explicitly submit, and prepare a review summary. Code execution and final review confirmation remain user-triggered actions.
+
+### Option 1: local Ollama (default)
+
+1. Install [Ollama](https://ollama.com/download) and make sure `ollama` is available in your terminal.
+2. Download the default model once:
+
+```bash
+ollama pull qwen2.5-coder:7b
+```
+
+The default 7B model is about 4.7 GB with a 32K context window. `start_mac.sh` installs Ollama and downloads it automatically when needed.
+
+For a lighter setup, use `qwen2.5-coder:3b` (about 1.9 GB); machines with more memory can use `qwen2.5-coder:14b` (about 9 GB). Sizes come from the [Ollama model page](https://ollama.com/library/qwen2.5-coder).
+
+Then run:
+
+```bash
+./start_mac.sh
+```
+
+Open [http://localhost:3000/agent-review](http://localhost:3000/agent-review) to use the Agent.
+
+### Agent configuration
+
+The generated `.env` uses these defaults:
+
+```env
+AGENT_PROVIDER="ollama"
+OLLAMA_BASE_URL="http://localhost:11434"
+OLLAMA_MODEL="qwen2.5-coder:7b"
+AGENT_MOCK_MODE="false"
+```
+
+- `OLLAMA_BASE_URL` selects the local Ollama endpoint. For privacy, the Agent accepts only `localhost` or `127.0.0.1` addresses.
+- `OLLAMA_MODEL` selects the installed model used for review conversations.
+- `AGENT_MOCK_MODE="true"` enables deterministic mock replies for UI development without Ollama.
+
+### Option 2: remote OpenAI-compatible API
+
+Any service exposing standard `/models` and `/chat/completions` endpoints can be used:
+
+```env
+AGENT_PROVIDER="openai-compatible"
+AGENT_BASE_URL="https://your-provider.example/v1"
+AGENT_API_KEY="your-secret-api-key"
+AGENT_MODEL="your-model-name"
+AGENT_TIMEOUT_SECONDS="120"
+AGENT_MOCK_MODE="false"
+```
+
+- Include the version prefix (usually `/v1`) in the base URL, but not `/chat/completions`.
+- Non-local remote URLs must use HTTPS.
+- The API key is read only by the Next.js server. Never commit `.env`.
+- `./start_mac.sh` skips Ollama installation, startup, and model downloads in remote mode.
+- Problem data, code, notes, and recent conversation context are sent to the remote provider; use local mode for sensitive material.
+
+For a one-off mock-mode launch:
+
+```bash
+AGENT_MOCK_MODE=true ./start_mac.sh
+```
+
+For persistent mock mode, change the value in `.env`. Set it back to `false` before testing real local inference.
+
+### Manual Agent startup
+
+If you prefer to manage each process yourself, start Ollama in one terminal:
+
+```bash
+ollama serve
+```
+
+Then start ReCode Plus in another terminal after the standard Prisma setup:
+
+```bash
+npm run dev
+```
+
+The browser communicates only with the Next.js server. The server sends review context to local Ollama or the remote API selected by `AGENT_PROVIDER`.
 
 ## Useful Commands
 
@@ -174,6 +264,7 @@ npm run dev
 - `prisma/dev.db` contains your personal data. Back it up regularly.
 - The project currently uses `prisma db push` for local schema sync. For team collaboration or release workflows, standard Prisma migrations are recommended.
 - Local code execution depends on installed runtimes such as `node`, `python3`, `javac`, and `g++`. Missing runtimes will make the corresponding language execution fail.
+- Regular notebook features do not depend on a model. Only the conversational Agent is unavailable when mock mode is off and the selected local or remote model cannot be reached.
 
 ## Acknowledgements
 
