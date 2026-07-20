@@ -39,9 +39,9 @@ const SideBar = () => {
           >
             <h1 className="text-xl font-bold tracking-tight">
               <span className="bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
-                ReCode
+                Recall
               </span>
-              <span className="text-[#ffa116]"> Plus</span>
+              <span className="text-[#ffa116]">Agent</span>
             </h1>
           </motion.div>
         </div>

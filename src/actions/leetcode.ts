@@ -51,7 +51,7 @@ export async function fetchLeetCodeQuestionAction(url: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (compatible; ReCode/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; RecallAgent/1.0)',
       },
       body: JSON.stringify({
         query,

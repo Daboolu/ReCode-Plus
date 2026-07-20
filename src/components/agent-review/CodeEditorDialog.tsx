@@ -70,7 +70,7 @@ export default function CodeEditorDialog({
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(`recode-agent-draft:${sessionId}`);
+      const saved = localStorage.getItem(`recall-agent-draft:${sessionId}`);
       if (!saved) return;
       const parsed = JSON.parse(saved) as { language?: unknown; code?: unknown };
       if (
@@ -106,7 +106,7 @@ export default function CodeEditorDialog({
   const saveDraft = () => {
     try {
       localStorage.setItem(
-        `recode-agent-draft:${sessionId}`,
+        `recall-agent-draft:${sessionId}`,
         JSON.stringify({ language, code }),
       );
       toast.success(copy.draftSaved);

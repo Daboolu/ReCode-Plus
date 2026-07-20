@@ -607,8 +607,8 @@ export async function saveAgentSubmission({
   ]);
 }
 
-const MEMORY_START = "<!-- recode-agent-memory:start -->";
-const MEMORY_END = "<!-- recode-agent-memory:end -->";
+const MEMORY_START = "<!-- recall-agent-memory:start -->";
+const MEMORY_END = "<!-- recall-agent-memory:end -->";
 
 function codeVersion(language: string, code: string) {
   return createHash("sha256").update(`${language}\0${code}`).digest("hex").slice(0, 12);

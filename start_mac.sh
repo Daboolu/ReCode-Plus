@@ -18,7 +18,7 @@ if ! command -v node >/dev/null 2>&1; then
 fi
 
 echo "=========================================="
-echo "   ReCode - Professional Coding Notebook"
+echo "   RecallAgent - Memory-Aware Coding Review"
 echo "=========================================="
 
 if ! command -v node >/dev/null 2>&1; then
@@ -26,7 +26,7 @@ if ! command -v node >/dev/null 2>&1; then
     exit 1
 fi
 
-FORCE_SETUP="${RECODE_FORCE_SETUP:-false}"
+FORCE_SETUP="${RECALL_AGENT_FORCE_SETUP:-false}"
 if [ "${1:-}" = "--setup" ]; then
     FORCE_SETUP="true"
     shift
@@ -81,7 +81,7 @@ write_stamp() {
 
 NODE_ABI="$(node -p '[process.platform, process.arch, process.versions.modules].join("-")')"
 DEPENDENCY_KEY="$(make_fingerprint package.json package-lock.json)-$NODE_ABI"
-CACHE_DIR="node_modules/.cache/recode-plus"
+CACHE_DIR="node_modules/.cache/recall-agent"
 DEPENDENCY_STAMP="$CACHE_DIR/dependencies"
 DEPENDENCIES_UPDATED="false"
 
@@ -212,7 +212,7 @@ ollama_is_ready() {
 ollama_has_model() {
     local tags_file
 
-    tags_file="${TMPDIR:-/tmp}/recode-plus-ollama-tags-$$.json"
+    tags_file="${TMPDIR:-/tmp}/recall-agent-ollama-tags-$$.json"
     if ! curl --connect-timeout 1 --max-time 5 --fail --silent \
         "$OLLAMA_BASE_URL/api/tags" -o "$tags_file"; then
         return 1
@@ -276,7 +276,7 @@ start_ollama_service() {
         return 0
     fi
 
-    OLLAMA_LOG="${TMPDIR:-/tmp}/recode-plus-ollama.log"
+    OLLAMA_LOG="${TMPDIR:-/tmp}/recall-agent-ollama.log"
     echo "Starting the local Ollama service..."
     ollama serve >"$OLLAMA_LOG" 2>&1 &
 
@@ -352,13 +352,13 @@ fi
 PORT="${PORT:-3000}"
 APP_URL="http://localhost:$PORT"
 
-echo "[4/4] Launching ReCode..."
+echo "[4/4] Launching RecallAgent..."
 echo "The development server stays active in this terminal. Press Control+C to stop."
 
 if command -v lsof >/dev/null 2>&1 && \
    lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
     echo "[ERROR] Port $PORT is already in use."
-    echo "        If ReCode is already running, visit: $APP_URL"
+    echo "        If RecallAgent is already running, visit: $APP_URL"
     echo "        Otherwise stop the process using that port and try again."
     exit 1
 fi
@@ -383,7 +383,7 @@ wait_for_app() {
     while [ "$attempt" -lt 60 ]; do
         if curl --connect-timeout 1 --max-time 1 --fail --silent \
             "$APP_URL" >/dev/null 2>&1; then
-            echo "[READY] ReCode is available at: $APP_URL"
+            echo "[READY] RecallAgent is available at: $APP_URL"
             open_app
             return
         fi
@@ -391,7 +391,7 @@ wait_for_app() {
         sleep 0.5
     done
 
-    echo "[WARN] The browser was not opened because ReCode did not respond within 30 seconds."
+    echo "[WARN] The browser was not opened because RecallAgent did not respond within 30 seconds."
 }
 
 # Keep Next.js in the foreground so Control+C still stops it normally. Only the

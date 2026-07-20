@@ -25,11 +25,11 @@ export default function OnboardingPage() {
 
   const t = {
     title:
-      formData.uiLanguage === "en" ? "Welcome to ReCode" : "欢迎来到 ReCode",
+      formData.uiLanguage === "en" ? "Welcome to RecallAgent" : "欢迎来到 RecallAgent",
     sub:
       formData.uiLanguage === "en"
-        ? "Kickstart your smart practice in seconds"
-        : "只需几步，开启你的智能刷题之旅",
+        ? "Start a coding review loop that remembers how you learn"
+        : "开启一段能够记住学习过程的编程复习",
     labelUser: formData.uiLanguage === "en" ? "Username" : "用户名",
     placeholderUser:
       formData.uiLanguage === "en" ? "What should I call you?" : "怎么称呼你？",

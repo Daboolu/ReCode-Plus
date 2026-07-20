@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 echo ==========================================
-echo    ReCode - Professional Coding Notebook
+echo    RecallAgent - Memory-Aware Coding Review
 echo ==========================================
 
 :: --- Environment Check ---
@@ -24,7 +24,7 @@ if %errorlevel% neq 0 goto ERROR_EXIT
 
 :LAUNCH
 echo [2/3] Database is ready.
-echo [3/3] Launching ReCode...
+echo [3/3] Launching RecallAgent...
 echo.
 echo Automatically opening: http://localhost:3000
 echo.

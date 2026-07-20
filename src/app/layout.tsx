@@ -6,9 +6,9 @@ import OnboardingPage from "@/app/onboarding/page";
 import DashboardStateInitializer from "@/components/layout/DashboardStateInitializer";
 
 export const metadata: Metadata = {
-  title: "ReCode",
+  title: "RecallAgent",
   description:
-    "A problem-solving progress management tool based on the Ebbinghaus Forgetting Curve",
+    "A memory-aware coding review Agent for deliberate practice",
   robots: { index: false, follow: false },
 };
 

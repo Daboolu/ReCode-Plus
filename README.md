@@ -1,8 +1,8 @@
-# ReCode Plus - Local-First Algorithm Practice and Review
+# RecallAgent — Memory-Aware Coding Review Agent
 
 [中文](./README_CN.md)
 
-ReCode Plus is a personal algorithm practice manager. It brings problem notes, current solution code, mastery ratings, spaced repetition scheduling, and practice replay timelines into one local application.
+RecallAgent is a memory-aware coding review Agent for deliberate practice. It reads the current problem, submitted code, review history, and Note memory; plans safe function calls, executes the code locally, explains real outputs, and carries useful findings into the next review.
 
 The project currently runs from source code and stores data locally in SQLite by default.
 
@@ -11,31 +11,15 @@ The project currently runs from source code and stores data locally in SQLite by
 - **Local problem library**: Track problem ID, title, difficulty, tags, link, notes, and current solution code.
 - **Spaced repetition scheduling**: Calculates the next review date from difficulty, mastery rating, interval, easiness, and review count.
 - **Daily review queue**: Lists due problems and updates review state after each rating.
-- **Conversational review Agent**: Uses either local Ollama or a remote OpenAI-compatible API in a dedicated review workspace with an on-demand coding editor.
+- **Agent-driven review loop**: Reads the current problem and code, plans calls, validates arguments, executes tests, explains actual outputs, and records the result as memory.
+- **Persistent Note memory**: Reuses code-versioned observations and review notes in later conversations instead of starting from zero.
+- **Local or remote reasoning**: Uses local Ollama by default or an OpenAI-compatible remote API when configured.
 - **Practice replay timeline**: Records problem creation, code saves, and review ratings so each problem has a visible learning history.
 - **Code editor and local execution**: Built-in Monaco Editor with local execution support for TypeScript, JavaScript, Python, Java, and C++.
 - **Markdown notes**: Supports Markdown, syntax highlighting, and LaTeX math rendering.
 - **Learning dashboard**: Shows mastery distribution, due reviews, weekly additions, and suggested focus tasks.
 - **Future review view**: Shows the scheduled review distribution for the next 30 days.
 - **Local data ownership**: All data lives in `prisma/dev.db`, making backup and migration straightforward.
-
-## Screenshot
-
->  Home dashboard with due reviews, mastery distribution, and focus tasks.
-![home](./public/images/home.png)
-
-> Questions table with search, filters, preview modal, and practice replay timeline.
-![questions](./public/images/question.png)
-
-> Question editor with Monaco code editor, metadata sidebar, Markdown notes, and timeline.
-![editor](./public/images/display.png)
-![editor](./public/images/record.png)
-
-> Review page with review cards, rating buttons, and problem preview.
-![review](./public/images/review.png)
-
-> Future page with the next 30 days review distribution chart.
-![future](./public/images/future.png)
 
 ## Tech Stack
 
@@ -117,9 +101,19 @@ Then open:
 http://localhost:3000
 ```
 
-On first launch, if no local user exists, the app redirects to onboarding. Enter a username, preferred programming language, and UI language to start using ReCode Plus.
+On first launch, if no local user exists, the app redirects to onboarding. Enter a username, preferred programming language, and UI language to start using RecallAgent.
 
-## Conversational Review Agent
+## How the RecallAgent Loop Works
+
+1. Select a suggested problem or choose one manually.
+2. RecallAgent assembles the problem, current code, review history, and Note memory.
+3. After code submission, the model identifies a callable function or class method and proposes JSON-only arguments.
+4. The server validates the target and executes the exact submitted code in a constrained local runner.
+5. Actual outputs return to the Agent for explanation; model-planned probes are treated as observations, not an authoritative online judge.
+6. The resulting calls, outputs, and analysis are saved into the problem Note with a code-version hash.
+7. The UI streams each stage into the conversation, including planning, validation, execution, judgment, and memory persistence.
+
+## Model Configuration
 
 The independent `/agent-review` page leaves the existing dashboard, question, and review pages unchanged. It initially shows suggestion bubbles generated from local review data. The model is called only after you choose a suggestion or send a message.
 
@@ -196,7 +190,7 @@ If you prefer to manage each process yourself, start Ollama in one terminal:
 ollama serve
 ```
 
-Then start ReCode Plus in another terminal after the standard Prisma setup:
+Then start RecallAgent in another terminal after the standard Prisma setup:
 
 ```bash
 npm run dev
@@ -260,15 +254,11 @@ npm run dev
 
 ## Notes
 
-- ReCode Plus is local-first and does not include cloud sync or account authentication.
+- RecallAgent is local-first and does not include cloud sync or account authentication.
 - `prisma/dev.db` contains your personal data. Back it up regularly.
 - The project currently uses `prisma db push` for local schema sync. For team collaboration or release workflows, standard Prisma migrations are recommended.
 - Local code execution depends on installed runtimes such as `node`, `python3`, `javac`, and `g++`. Missing runtimes will make the corresponding language execution fail.
 - Regular notebook features do not depend on a model. Only the conversational Agent is unavailable when mock mode is off and the selected local or remote model cannot be reached.
-
-## Acknowledgements
-
-Thanks to [CoisiniIce/ReCode](https://github.com/CoisiniIce/ReCode). This project was developed by extending that project and adding new features and adjustments on top of it.
 
 ## License
 

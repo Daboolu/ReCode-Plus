@@ -7,7 +7,7 @@ import type {
 } from "@/types/agent";
 import { AgentApiError } from "./errors";
 
-const RESULT_MARKER = "__RECODE_TEST_RESULT__";
+const RESULT_MARKER = "__RECALL_AGENT_TEST_RESULT__";
 const MAX_TESTS = 5;
 const MAX_TEST_VALUE_LENGTH = 4_000;
 
@@ -113,18 +113,18 @@ function functionHarness(
   if (language === "python") {
     return `${code}
 
-import json as __recode_json
-import inspect as __recode_inspect
+import json as __recall_agent_json
+import inspect as __recall_agent_inspect
 
-def __recode_tree(value):
+def __recall_agent_tree(value):
     if value is None or hasattr(value, "val"):
         return value
     if isinstance(value, dict) and value.get("$type") == "tree":
         value = value.get("levelOrder", [])
     if isinstance(value, dict):
         node = TreeNode(value.get("val", 0))
-        node.left = __recode_tree(value.get("left"))
-        node.right = __recode_tree(value.get("right"))
+        node.left = __recall_agent_tree(value.get("left"))
+        node.right = __recall_agent_tree(value.get("right"))
         return node
     if not isinstance(value, list) or not value:
         return None
@@ -136,14 +136,14 @@ def __recode_tree(value):
             node.right = next(children, None)
     return nodes[0]
 
-def __recode_list(value):
+def __recall_agent_list(value):
     if value is None or hasattr(value, "val"):
         return value
     if isinstance(value, dict) and value.get("$type") == "list":
         value = value.get("values", [])
     if isinstance(value, dict):
         node = ListNode(value.get("val", 0))
-        node.next = __recode_list(value.get("next"))
+        node.next = __recall_agent_list(value.get("next"))
         return node
     if not isinstance(value, list):
         return None
@@ -155,41 +155,41 @@ def __recode_list(value):
     return dummy.next
 
 try:
-    __recode_args = __recode_json.loads(${encodedArgs})
-    __recode_expected = __recode_json.loads(${encodedExpected})
-    if ${hasTreeNode ? "True" : "False"} and __recode_args:
-        __recode_args[0] = __recode_tree(__recode_args[0])
-    elif ${hasListNode ? "True" : "False"} and __recode_args:
-        __recode_args[0] = __recode_list(__recode_args[0])
-    __recode_callable = globals().get(${JSON.stringify(functionName)})
-    __recode_adapter = None
-    if __recode_callable is None:
-        __recode_solution = globals().get(${JSON.stringify(className || "Solution")})
-        if __recode_solution is None:
+    __recall_agent_args = __recall_agent_json.loads(${encodedArgs})
+    __recall_agent_expected = __recall_agent_json.loads(${encodedExpected})
+    if ${hasTreeNode ? "True" : "False"} and __recall_agent_args:
+        __recall_agent_args[0] = __recall_agent_tree(__recall_agent_args[0])
+    elif ${hasListNode ? "True" : "False"} and __recall_agent_args:
+        __recall_agent_args[0] = __recall_agent_list(__recall_agent_args[0])
+    __recall_agent_callable = globals().get(${JSON.stringify(functionName)})
+    __recall_agent_adapter = None
+    if __recall_agent_callable is None:
+        __recall_agent_solution = globals().get(${JSON.stringify(className || "Solution")})
+        if __recall_agent_solution is None:
             raise NameError("No global function or ${className || "Solution"} class method named ${functionName}")
-        __recode_callable = getattr(__recode_solution(), ${JSON.stringify(functionName)})
+        __recall_agent_callable = getattr(__recall_agent_solution(), ${JSON.stringify(functionName)})
     else:
-        __recode_parameters = list(__recode_inspect.signature(__recode_callable).parameters.values())
-        __recode_required = [p for p in __recode_parameters if p.default is __recode_inspect.Parameter.empty and p.kind in (__recode_inspect.Parameter.POSITIONAL_ONLY, __recode_inspect.Parameter.POSITIONAL_OR_KEYWORD)]
-        if __recode_parameters and __recode_parameters[0].name in ("self", "cls") and len(__recode_args) == len(__recode_required) - 1:
-            __recode_args.insert(0, None)
-            __recode_adapter = "Top-level function declares self/cls; executor supplied a placeholder receiver"
-        elif len(__recode_args) == 1 and isinstance(__recode_args[0], list) and len(__recode_required) > 1 and len(__recode_args[0]) == len(__recode_required):
-            __recode_args = __recode_args[0]
-            __recode_adapter = "Expanded one accidentally nested argument list to match the function signature"
-    __recode_actual = __recode_callable(*__recode_args)
-    print(${JSON.stringify(RESULT_MARKER)} + __recode_json.dumps({
-        "passed": __recode_actual == __recode_expected,
-        "actual": __recode_actual,
-        "expected": __recode_expected,
-        "adapter": __recode_adapter
+        __recall_agent_parameters = list(__recall_agent_inspect.signature(__recall_agent_callable).parameters.values())
+        __recall_agent_required = [p for p in __recall_agent_parameters if p.default is __recall_agent_inspect.Parameter.empty and p.kind in (__recall_agent_inspect.Parameter.POSITIONAL_ONLY, __recall_agent_inspect.Parameter.POSITIONAL_OR_KEYWORD)]
+        if __recall_agent_parameters and __recall_agent_parameters[0].name in ("self", "cls") and len(__recall_agent_args) == len(__recall_agent_required) - 1:
+            __recall_agent_args.insert(0, None)
+            __recall_agent_adapter = "Top-level function declares self/cls; executor supplied a placeholder receiver"
+        elif len(__recall_agent_args) == 1 and isinstance(__recall_agent_args[0], list) and len(__recall_agent_required) > 1 and len(__recall_agent_args[0]) == len(__recall_agent_required):
+            __recall_agent_args = __recall_agent_args[0]
+            __recall_agent_adapter = "Expanded one accidentally nested argument list to match the function signature"
+    __recall_agent_actual = __recall_agent_callable(*__recall_agent_args)
+    print(${JSON.stringify(RESULT_MARKER)} + __recall_agent_json.dumps({
+        "passed": __recall_agent_actual == __recall_agent_expected,
+        "actual": __recall_agent_actual,
+        "expected": __recall_agent_expected,
+        "adapter": __recall_agent_adapter
     }, ensure_ascii=False, default=str))
-except Exception as __recode_error:
-    print(${JSON.stringify(RESULT_MARKER)} + __recode_json.dumps({
+except Exception as __recall_agent_error:
+    print(${JSON.stringify(RESULT_MARKER)} + __recall_agent_json.dumps({
         "passed": False,
         "actual": None,
-        "expected": __recode_json.loads(${encodedExpected}),
-        "error": type(__recode_error).__name__ + ": " + str(__recode_error)
+        "expected": __recall_agent_json.loads(${encodedExpected}),
+        "error": type(__recall_agent_error).__name__ + ": " + str(__recall_agent_error)
     }, ensure_ascii=False))`;
   }
 
@@ -198,15 +198,15 @@ except Exception as __recode_error:
 
 ;(async () => {
   try {
-    const __recodeArgs = JSON.parse(${encodedArgs});
-    const __recodeExpected = JSON.parse(${encodedExpected});
-    const __recodeTree = (value) => {
+    const __recallAgentArgs = JSON.parse(${encodedArgs});
+    const __recallAgentExpected = JSON.parse(${encodedExpected});
+    const __recallAgentTree = (value) => {
       if (value == null || (typeof value === "object" && "val" in value && value.constructor?.name === "TreeNode")) return value;
       if (value?.$type === "tree") value = value.levelOrder || [];
       if (!Array.isArray(value)) {
         const node = new TreeNode(value?.val ?? 0);
-        node.left = __recodeTree(value?.left ?? null);
-        node.right = __recodeTree(value?.right ?? null);
+        node.left = __recallAgentTree(value?.left ?? null);
+        node.right = __recallAgentTree(value?.right ?? null);
         return node;
       }
       if (!value.length) return null;
@@ -218,12 +218,12 @@ except Exception as __recode_error:
       }
       return nodes[0];
     };
-    const __recodeList = (value) => {
+    const __recallAgentList = (value) => {
       if (value == null || (typeof value === "object" && "val" in value && value.constructor?.name === "ListNode")) return value;
       if (value?.$type === "list") value = value.values || [];
       if (!Array.isArray(value)) {
         const node = new ListNode(value?.val ?? 0);
-        node.next = __recodeList(value?.next ?? null);
+        node.next = __recallAgentList(value?.next ?? null);
         return node;
       }
       const dummy = new ListNode(0);
@@ -231,22 +231,22 @@ except Exception as __recode_error:
       for (const item of value) current = current.next = new ListNode(item);
       return dummy.next;
     };
-    if (${hasTreeNode} && __recodeArgs.length) __recodeArgs[0] = __recodeTree(__recodeArgs[0]);
-    else if (${hasListNode} && __recodeArgs.length) __recodeArgs[0] = __recodeList(__recodeArgs[0]);
-    ${className ? `const __recodeInstance = new ${className}();` : ""}
-    const __recodeCallable = ${className ? `__recodeInstance[${JSON.stringify(functionName)}].bind(__recodeInstance)` : functionName};
-    const __recodeActual = await __recodeCallable(...__recodeArgs);
+    if (${hasTreeNode} && __recallAgentArgs.length) __recallAgentArgs[0] = __recallAgentTree(__recallAgentArgs[0]);
+    else if (${hasListNode} && __recallAgentArgs.length) __recallAgentArgs[0] = __recallAgentList(__recallAgentArgs[0]);
+    ${className ? `const __recallAgentInstance = new ${className}();` : ""}
+    const __recallAgentCallable = ${className ? `__recallAgentInstance[${JSON.stringify(functionName)}].bind(__recallAgentInstance)` : functionName};
+    const __recallAgentActual = await __recallAgentCallable(...__recallAgentArgs);
     console.log(${JSON.stringify(RESULT_MARKER)} + JSON.stringify({
-      passed: JSON.stringify(__recodeActual) === JSON.stringify(__recodeExpected),
-      actual: __recodeActual,
-      expected: __recodeExpected,
+      passed: JSON.stringify(__recallAgentActual) === JSON.stringify(__recallAgentExpected),
+      actual: __recallAgentActual,
+      expected: __recallAgentExpected,
     }));
-  } catch (__recodeError) {
+  } catch (__recallAgentError) {
     console.log(${JSON.stringify(RESULT_MARKER)} + JSON.stringify({
       passed: false,
       actual: null,
       expected: JSON.parse(${encodedExpected}),
-      error: __recodeError instanceof Error ? __recodeError.message : String(__recodeError),
+      error: __recallAgentError instanceof Error ? __recallAgentError.message : String(__recallAgentError),
     }));
   }
 })();`;
