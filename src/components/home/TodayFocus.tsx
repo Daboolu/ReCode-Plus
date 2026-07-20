@@ -31,8 +31,9 @@ export const TodayFocus = ({ focusTasks, totalTasks }: TodayFocusProps) => {
           /* list */
           <div className="flex flex-col gap-3 overflow-y-auto pr-2 -mr-2 scroll-smooth">
             {focusTasks.map((task) => (
-              <div
+              <Link
                 key={task.id}
+                href={`/questions/${task.id}`}
                 className="group relative p-5 bg-white rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-md hover:border-[#ffa116]/30 transition-all duration-300 shrink-0 cursor-pointer"
               >
                 <div className="absolute left-0 top-4 bottom-4 w-1 bg-gray-100 rounded-r-full group-hover:bg-[#ffa116] transition-colors duration-300" />
@@ -58,7 +59,7 @@ export const TodayFocus = ({ focusTasks, totalTasks }: TodayFocusProps) => {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (

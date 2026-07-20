@@ -26,9 +26,6 @@ model User {
   // Global theme color, reserved for future use
   themeColor    String @default("emerald")
 
-  // Review limit
-  dailyReviewLimit Int @default(50)
-
   // Relations
   // All problem progress associated with the user
   progress            Progress[]

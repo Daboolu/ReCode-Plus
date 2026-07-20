@@ -22,13 +22,11 @@ export interface UserState {
   username: string;
   preferredLang: string;
   isSettingModalOpen: boolean;
-  dailyReviewLimit: number;
 
   setLanguage: (lang: LanguageType) => void;
   setTheme: (color: string) => void;
   setUsername: (name: string) => void;
   setPreferredLang: (preLang: string) => void;
-  setDailyReviewLimit: (limit: number) => void;
   setIsSettingModalOpen: (status: boolean) => void;
 }
 
@@ -37,7 +35,6 @@ export interface UpdateUserProps {
   username: string;
   preferredLang: string;
   uiLanguage: string;
-  dailyReviewLimit: number;
 }
 
 // register interfaces

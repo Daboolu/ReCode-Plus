@@ -84,13 +84,11 @@ export async function saveQuestionAction(formData: EditorFormData) {
             problemId: problem.id,
           },
         },
-        // Only update "Last Viewed Time", indicating that you have interacted with this question today.
-        // The content of the editing does not reset the review plan, unless the score is changed on the Review page.
+        // Editing content does not count as a review and must not alter the SRS schedule.
         update: {
           status: formData.masteryLevel === 5 ? "Solved" : "Reviewing",
           masteryLevel: formData.masteryLevel,
           notes: formData.notes,
-          lastReview: now,
         },
         // Creating the question itself counts as the first attempt, with an initial interval of 1 day.
         create: {

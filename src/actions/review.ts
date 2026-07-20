@@ -7,6 +7,10 @@ import { getNextReviewDate } from "@/lib/utils";
 
 export async function submitReviewAction(progressId: string, rating: number) {
   try {
+    if (!Number.isInteger(rating) || rating < 0 || rating > 5) {
+      return { success: false, error: "Rating must be an integer from 0 to 5" };
+    }
+
     const user = await prisma.user.findFirst();
     if (!user) return { success: false, error: "Unauthorized" };
 

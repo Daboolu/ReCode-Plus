@@ -20,53 +20,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { User, Code2, Globe, Layers } from 'lucide-react';
+import { User, Code2, Globe } from 'lucide-react';
 
 interface SettingsFormProps {
   username: string;
   storePreferredLang: string;
   storeUiLanguage: LanguageType;
-  storeDailyReviewLimit: number;
   setIsSettingModalOpen: (status: boolean) => void;
   setStoreLanguage: (lang: LanguageType) => void;
   setStorePreferredLang: (lang: string) => void;
-  setStoreDailyReviewLimit: (limit: number) => void;
 }
 
 function SettingsForm({
   username,
   storePreferredLang,
   storeUiLanguage,
-  storeDailyReviewLimit,
   setIsSettingModalOpen,
   setStoreLanguage,
   setStorePreferredLang,
-  setStoreDailyReviewLimit,
 }: SettingsFormProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [localPreferredLang, setLocalPreferredLang] =
     useState(storePreferredLang);
   const [localUiLanguage, setLocalUiLanguage] = useState(storeUiLanguage);
-  const [localDailyLimit, setLocalDailyLimit] = useState(storeDailyReviewLimit);
-
   const handleSave = async () => {
-    const limitToSave = Math.max(1, Math.min(200, Number(localDailyLimit)));
-
     setIsUpdating(true);
 
     const res = await updateUserPreferences({
       username,
       preferredLang: localPreferredLang,
       uiLanguage: localUiLanguage,
-      dailyReviewLimit: limitToSave,
     });
 
     if (res.success) {
       // Only after the save operation is successful will the global Store be updated to trigger UI changes.
       setStoreLanguage(localUiLanguage);
       setStorePreferredLang(localPreferredLang);
-      setStoreDailyReviewLimit(limitToSave);
 
       toast.success('settings.saveSuccess');
       setIsSettingModalOpen(false);
@@ -125,32 +114,6 @@ function SettingsForm({
             </Select>
           </div>
 
-          {/* Daily Review Limit */}
-          <div className="space-y-2.5">
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2 ml-1">
-              <Layers size={14} />{' '}
-              {isEn ? 'Daily Review Limit' : '每日复习上限'}
-            </label>
-            <div className="relative">
-              <Input
-                type="number"
-                min={1}
-                max={200}
-                value={localDailyLimit}
-                onChange={(e) => setLocalDailyLimit(Number(e.target.value))}
-                className="w-full h-[46px] px-5 bg-white border border-gray-200/60 rounded-2xl shadow-sm hover:border-[#ffa116]/50 focus-visible:ring-2 focus-visible:ring-[#ffa116]/20 transition-all outline-none font-medium text-gray-800 pr-16"
-              />
-              <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium pointer-events-none">
-                {isEn ? 'items' : '题'}
-              </span>
-            </div>
-            <p className="text-[11px] text-gray-400 ml-1">
-              {isEn
-                ? 'Maximum number of questions to review per day (1-200).'
-                : '每天复习的最大题目数量 (1-200)。'}
-            </p>
-          </div>
-
           {/* UI language */}
           <div className="space-y-2.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2 ml-1">
@@ -205,10 +168,8 @@ export default function SettingsModal() {
     username,
     preferredLang: storePreferredLang,
     uiLanguage: storeUiLanguage,
-    dailyReviewLimit: storeDailyReviewLimit,
     setLanguage: setStoreLanguage,
     setPreferredLang: setStorePreferredLang,
-    setDailyReviewLimit: setStoreDailyReviewLimit,
   } = useUserStore();
 
   return (
@@ -222,11 +183,9 @@ export default function SettingsModal() {
             username={username}
             storePreferredLang={storePreferredLang}
             storeUiLanguage={storeUiLanguage}
-            storeDailyReviewLimit={storeDailyReviewLimit}
             setIsSettingModalOpen={setIsSettingModalOpen}
             setStoreLanguage={setStoreLanguage}
             setStorePreferredLang={setStorePreferredLang}
-            setStoreDailyReviewLimit={setStoreDailyReviewLimit}
           />
         )}
       </DialogContent>

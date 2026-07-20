@@ -84,7 +84,7 @@ const getHomePageData = async (userId: string) => {
   // Format
   // format Focus Tasks
   const focusTasks: FocusTaskItem[] = rawFocusTasks.map((p) => ({
-    id: p.problem.id,
+    id: p.id,
     title: p.problem.title,
     difficulty: p.problem.difficulty,
   }));
